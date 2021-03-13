@@ -12,14 +12,20 @@ ensure_source () {
     fi
 }
 
-install_nvim () {
-    echo -en "\nInstalling nvim configuration..."
+setup_nvim () {
+    echo -en "\nSetting up NVIM..."
     mkdir -p ~/.config/nvim
     cp -r /tmp/dev_tools/nvim/* ~/.config/nvim/
     vim -c ":PlugInstall | :qa!"
     echo "OK"
 }
 
+setup_bashrc () {
+    echo -en "\nSetting up .bashrc..."
+    cp -r /tmp/dev_tools/.bashrc ~/
+    touch ~/.credentials
+    echo "OK"
+}
 
 ensure_source
 if [ $# -ne 0	]; then
@@ -27,7 +33,10 @@ if [ $# -ne 0	]; then
 	do
         case $tool in
             nvim)
-                install_nvim
+                setup_nvim
+                ;;
+            bashrc)
+                setup_bashrc
                 ;;
             *)
                 echo -e "\n$tool not found, skipping"
@@ -35,5 +44,7 @@ if [ $# -ne 0	]; then
         esac
 	done
 else
-    install_nvim
+    setup_nvim
+    setup_bashrc
 fi
+
