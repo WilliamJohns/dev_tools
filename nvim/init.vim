@@ -1,33 +1,36 @@
-" Indentation
-set tabstop=4 softtabstop=4
-set shiftwidth=4
-set expandtab
-set smartindent
+"set nocompatible        " disable compatibility to old-time vi
+set showmatch           " show matching brackets.
+set ignorecase          " case insensitive matching
+set autoindent          " indent a new line the same amount as the line just typed
+set number              " add line numbers
+set tabstop=4           " number of columns occupied by a tab character
+set expandtab           " converts tabs to white space
+set shiftwidth=4        " width for autoindents
+set softtabstop=4       " see multiple spaces as tabstops so <BS> does the right thing
+set nowrap              " Disable text wrapping
+set nu rnu              " Relative Line Numbers
+set nohlsearch          " Disable search highlighting after search completion
 
-set nowrap          " Disable text wrapping
-"set exrc            " Loads local rc files when present in a directory
-set guicursor=      " Reset cursor stuling
-set nu rnu          " Hybrid line number mode
-set nohlsearch      " Disable search highlighting after search completion
-set incsearch       " Enable incremental search highlighting
-"set hidden          " Keep buffers hidden on swap instead of unloading
-set scrolloff=8     " Pad scroll lines
-set signcolumn=yes  " Enable Notice Column
-set colorcolumn=120 " Column highlighting
 
-" Auto install vim-plug
+" Auto install Vim-Plug
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
   silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall
 endif
 
+" Install Missing Plugins
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)')) | PlugInstall --sync | source $MYVIMRC | endif
+
 " Plugins
 call plug#begin('~/.config/nvim/plugged')
 Plug 'rafi/awesome-vim-colorschemes'    " Color Schemes
-Plug 'tpope/vim-fugitive'               " Git Tools
-Plug 'scrooloose/nerdtree'              " FileTreeExplorer
+Plug 'bling/vim-airline'                " Status Bar
+Plug 'davidhalter/jedi-vim'             " Python Completion
+"Plug 'tpope/vim-fugitive'               " Git Tools
+"Plug 'scrooloose/nerdtree'              " FileTreeExplorer
 call plug#end()
 
+" Color Schemes
 " Set Default Color Scheme
 " colorscheme jellybeans
 " colorscheme materialbox
@@ -37,26 +40,21 @@ call plug#end()
 " colorscheme gruvbox
 " colorscheme gotham256
 " colorscheme papercolor
-colorscheme minimalist
+colorscheme pink-moon
+" colorscheme minimalist
 
-" Modify NERDTree Appearance
-let g:NERDTreeDirArrowExpandable='+'
-let g:NERDTreeDirArrowCollapsible='-'
+" Configure Jedi
+let g:python3_host_prog = '/home/will/.pyenv/versions/global/bin/python'    " Set Path to global Python from PyEnv
+autocmd FileType python setlocal completeopt-=preview                       " Disable Doc String Popup
 
-" Mappings
-nnoremap <C-B> :NERDTreeToggle<CR>
-
-" Auto Command Functions
+" Auto Commands
 fun! TrimWhitespace()
     let l:save = winsaveview()
     keeppatterns %s/\s\+$//e
     call winrestview(l:save)
 endfun
 
-
-" Auto Commands
 augroup MY_AUTO_COMMANDS
     autocmd!
     autocmd BufWritePre * :call TrimWhitespace()
 augroup END
-
